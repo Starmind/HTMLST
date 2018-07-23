@@ -4,7 +4,7 @@ from nltk.tokenize import sent_tokenize
 
 INLINE_ELEMENTS = {'a', 'abbr', 'acronym', 'b', 'bdi', 'bdo', 'big', 'cite', 'code', 'dfn', 'em', 'i', 'kbd',
                    'label', 'mark', 'nav', 'output', 'progress', 'q', 's', 'slot', 'small', 'span', 'strong',
-                   'sub', 'sup', 'time', 'tt', 'var', 'wbr'}
+                   'sub', 'sup', 'time', 'tt', 'u', 'var', 'wbr'}
 
 # does not include pre or textarea (which are accounted for in PRESERVE_WHITESPACE_ELEMENTS
 BLOCK_LEVEL_ELEMENTS = {'address', 'article', 'blockquote', 'caption', 'details', 'dialog', 'div', 'dl',
