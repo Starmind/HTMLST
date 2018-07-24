@@ -1,15 +1,16 @@
 import html5lib
 from html5lib.serializer import SerializeError
 from nltk.tokenize import sent_tokenize
+import logging
 
-INLINE_ELEMENTS = {'a', 'abbr', 'acronym', 'b', 'bdi', 'bdo', 'big', 'cite', 'code', 'dfn', 'em', 'i', 'kbd',
+INLINE_ELEMENTS = {'a', 'abbr', 'acronym', 'b', 'bdi', 'bdo', 'big', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'kbd',
                    'label', 'mark', 'nav', 'output', 'progress', 'q', 's', 'slot', 'small', 'span', 'strong',
                    'sub', 'sup', 'time', 'tt', 'u', 'var', 'wbr'}
 
 # does not include pre or textarea (which are accounted for in PRESERVE_WHITESPACE_ELEMENTS
 BLOCK_LEVEL_ELEMENTS = {'address', 'article', 'blockquote', 'caption', 'details', 'dialog', 'div', 'dl',
                         'dt', 'figcaption', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup',
-                        'li', 'main', 'ol', 'p', 'ul', 'section', 'table', 'tbody', 'td', 'th', 'thead', 'tr'}
+                        'li', 'main', 'ol', 'o:p', 'p', 'ul', 'section', 'table', 'tbody', 'td', 'th', 'thead', 'tr'}
 
 HEADER_ELEMENTS = {'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup'}
 
@@ -44,9 +45,12 @@ class HTMLSentenceTokenizer:
         self.parser = html5lib.HTMLParser()
         self.walker = html5lib.getTreeWalker("etree")
         self.sentences = []
+        self.ignored_parent_count = 0
+        self.current_string = ''
         self.ignore_header_text = ignore_headers
         self.raise_invalid_tags = raise_invalid_tags
-        self.reset()
+        logging.basicConfig(filename='tokenizer.log', level=logging.DEBUG,
+                            format='[%(asctime)s] [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
     def feed(self, markup):
         """
@@ -123,6 +127,8 @@ class HTMLSentenceTokenizer:
             raise ValueError("Parsing a tag which is not in the accepted element types. It is of type "
                              "{}".format(tag_name))
         else:
+            logging.debug("Ignoring a tag which is not in the accepted element types. It is of type "
+                          "{}".format(tag_name))
             self.ignored_parent_count += 1
 
     def handle_endtag(self, tag_name):
