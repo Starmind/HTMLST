@@ -72,8 +72,6 @@ class HTMLSentenceTokenizer:
                 if i['type'] == 'StartTag':
                     self.handle_starttag(i['name'])
                 elif i['type'] == 'EndTag':
-                    if i['name'] == 'body':
-                        break
                     self.handle_endtag(i['name'])
                 elif i['type'] == 'EmptyTag':
                     self.handle_empty_tag(i['name'])
@@ -127,8 +125,7 @@ class HTMLSentenceTokenizer:
             raise ValueError("Parsing a tag which is not in the accepted element types. It is of type "
                              "{}".format(tag_name))
         else:
-            logging.debug("Ignoring a tag which is not in the accepted element types. It is of type "
-                          "{}".format(tag_name))
+            logging.warning("Ignoring a tag not in the accepted element types. It is of type {}".format(tag_name))
             self.ignored_parent_count += 1
 
     def handle_endtag(self, tag_name):
@@ -145,6 +142,9 @@ class HTMLSentenceTokenizer:
             self.handle_end_of_string()
             return
 
+        if tag_name == 'body':
+            self.handle_end_of_string()
+
         # if tag_name in INLINE_ELEMENTS, nothing is done.
 
     def handle_empty_tag(self, tag_name):
@@ -160,7 +160,7 @@ class HTMLSentenceTokenizer:
         if len(self.current_string) == 0:
             return
 
-        current_sentences = sent_tokenize(self.current_string)
+        current_sentences = sent_tokenize(self.current_string)  # TODO replace by salmon sentence tokenizer
         for i in current_sentences:
             i = i.strip()
             self.sentences.append(i)
