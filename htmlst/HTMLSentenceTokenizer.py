@@ -1,6 +1,6 @@
 import html5lib
 from html5lib.serializer import SerializeError
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
 import logging
 
 INLINE_ELEMENTS = {'a', 'abbr', 'acronym', 'b', 'bdi', 'bdo', 'big', 'cite', 'code', 'dfn', 'em', 'font', 'i', 'kbd',
@@ -49,7 +49,11 @@ class HTMLSentenceTokenizer:
         self.current_string = ''
         self.ignore_header_text = ignore_headers
         self.raise_invalid_tags = raise_invalid_tags
-        logging.basicConfig(filename='tokenizer.log', level=logging.DEBUG,
+        punkt_param = PunktParameters()
+        abbreviations = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'Adj', 'Adm', 'Adv', 'Asst', 'Bart', 'Bldg', 'Brig', 'Bros', 'Capt', 'Cmdr', 'Col', 'Comdr', 'Con', 'Corp', 'Cpl', 'DR', 'Dr', 'Drs', 'Ens', 'Gen', 'Gov', 'Hon', 'Hr', 'Hosp', 'Insp', 'Lt', 'MM', 'MR', 'MRS', 'MS', 'Maj', 'Messrs', 'Mlle', 'Mme', 'Mr', 'Mrs', 'Ms', 'Msgr', 'Op', 'Ord', 'Pfc', 'Ph', 'Prof', 'Pvt', 'Rep', 'Reps', 'Res', 'Rev', 'Rt', 'Sen', 'Sens', 'Sfc', 'Sgt', 'Sr', 'St', 'Supt', 'Surg', 'v', 'vs', 'i.e', 'inc', 'rev', 'e.g', 'etc', 'Nos', 'Nr', 'pp', 'Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        punkt_param.abbrev_types = set(abbreviations)
+        self.tokenizer = PunktSentenceTokenizer(punkt_param)
+        logging.basicConfig(filename='html-tokenizer.log', level=logging.WARNING,
                             format='[%(asctime)s] [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
     def feed(self, markup):
@@ -160,7 +164,7 @@ class HTMLSentenceTokenizer:
         if len(self.current_string) == 0:
             return
 
-        current_sentences = sent_tokenize(self.current_string)  # TODO replace by salmon sentence tokenizer
+        current_sentences = self.tokenizer.tokenize(self.current_string)  # TODO replace by salmon sentence tokenizer
         for i in current_sentences:
             i = i.strip()
             self.sentences.append(i)
