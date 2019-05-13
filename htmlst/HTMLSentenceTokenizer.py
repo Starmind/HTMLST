@@ -17,7 +17,7 @@ HEADER_ELEMENTS = {'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup'}
 SKIPPED_ELEMENTS = ["br", "hr"]
 
 # elements which cannot contain children and denote the end of a sentence
-EMPTY_ELEMENTS = {'area', 'base', 'br', 'embed', 'hr', 'img'}
+EMPTY_ELEMENTS = {'area', 'base', 'br', 'embed', 'hr', 'img', 'col'}
 
 # elements which can have children which never qualify as a sentence
 SENTENCE_VOID_ELEMENTS = {'button', 'caption', 'col', 'colgroup', 'pre', 'table', 'textarea', 'td', 'tfoot',
